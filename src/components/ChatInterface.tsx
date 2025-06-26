@@ -6,18 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageBubble } from '@/components/MessageBubble';
 import { WelcomeScreen } from '@/components/WelcomeScreen';
-
-interface Message {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant';
-  timestamp: Date;
-}
+import { useChat } from '@/hooks/useChat';
 
 export const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, isLoading, sendMessage } = useChat();
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -38,30 +31,8 @@ export const ChatInterface = () => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: input.trim(),
-      role: 'user',
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
+    await sendMessage(input.trim());
     setInput('');
-    setIsLoading(true);
-
-    // Simulate AI response (replace with actual OpenAI API call)
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: `Thank you for your material science question about "${input.trim()}". I'm designed to help with material science queries including properties, synthesis, characterization, and applications of various materials. 
-
-For a complete implementation, you'll need to connect this interface to the OpenAI API through your Supabase backend. Would you like me to explain more about any specific material science topic?`,
-        role: 'assistant',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, aiResponse]);
-      setIsLoading(false);
-    }, 1500);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
