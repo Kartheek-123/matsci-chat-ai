@@ -14,8 +14,8 @@ interface SidebarProps {
 
 export const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
   const sidebarClasses = cn(
-    "bg-gray-900 text-white w-80 h-full flex flex-col transition-transform duration-300 ease-in-out shadow-xl",
-    isMobile ? "fixed left-0 top-0 z-50" : "relative",
+    "bg-gray-900 text-white w-80 flex flex-col transition-transform duration-300 ease-in-out shadow-xl",
+    isMobile ? "fixed left-0 top-0 z-50 h-screen" : "relative h-screen",
     isMobile && !isOpen && "-translate-x-full"
   );
 
@@ -186,7 +186,7 @@ export const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
                   ))}
                 </div>
               )
-            )}
+            ))}
           </div>
         </ScrollArea>
       </div>
