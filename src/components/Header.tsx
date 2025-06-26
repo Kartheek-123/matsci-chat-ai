@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Menu, Atom, User } from 'lucide-react';
+import { Menu, Atom } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { UserButton, useUser } from '@clerk/clerk-react';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -9,15 +10,17 @@ interface HeaderProps {
 }
 
 export const Header = ({ onMenuClick, isMobile }: HeaderProps) => {
+  const { user } = useUser();
+
   return (
-    <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+    <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
       <div className="flex items-center gap-3">
         {isMobile && (
           <Button
             variant="ghost"
             size="sm"
             onClick={onMenuClick}
-            className="p-2"
+            className="p-2 hover:bg-gray-100"
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -33,11 +36,24 @@ export const Header = ({ onMenuClick, isMobile }: HeaderProps) => {
         </div>
       </div>
       
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          <User className="h-4 w-4" />
-          {!isMobile && <span>Sign In</span>}
-        </Button>
+      <div className="flex items-center gap-3">
+        {user && (
+          <div className="hidden sm:flex flex-col items-end">
+            <span className="text-sm font-medium text-gray-900">
+              {user.firstName} {user.lastName}
+            </span>
+            <span className="text-xs text-gray-500">
+              {user.primaryEmailAddress?.emailAddress}
+            </span>
+          </div>
+        )}
+        <UserButton 
+          appearance={{
+            elements: {
+              avatarBox: "w-8 h-8"
+            }
+          }}
+        />
       </div>
     </header>
   );
