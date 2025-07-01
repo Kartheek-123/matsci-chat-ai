@@ -9,12 +9,25 @@ const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
 
+  const handleNewChat = () => {
+    // This will trigger a new chat session
+    window.location.reload(); // Simple way to start fresh
+  };
+
+  const handleClearHistory = () => {
+    // This would clear the chat history from localStorage or state
+    localStorage.removeItem('chatHistory');
+    console.log('Chat history cleared');
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <Sidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)}
+        onNewChat={handleNewChat}
+        onClearHistory={handleClearHistory}
         isMobile={isMobile}
       />
       

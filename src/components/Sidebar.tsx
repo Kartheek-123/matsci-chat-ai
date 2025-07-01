@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Plus, MessageSquare, History, Settings, HelpCircle, Clock, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -10,9 +10,13 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   isMobile: boolean;
+  onNewChat?: () => void;
+  onClearHistory?: () => void;
 }
 
-export const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
+export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory }: SidebarProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  
   const sidebarClasses = cn(
     "bg-gray-900 text-white w-80 flex flex-col transition-transform duration-300 ease-in-out shadow-xl",
     isMobile ? "fixed left-0 top-0 z-50 h-screen" : "relative h-screen",
@@ -103,10 +107,46 @@ export const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
     }
   ];
 
+  // Filter chat history based on search term
+  const filteredHistory = chatHistory.filter(chat =>
+    chat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    chat.preview.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const groupedHistory = {
-    Today: chatHistory.filter(chat => chat.date === "Today"),
-    Yesterday: chatHistory.filter(chat => chat.date === "Yesterday"),
-    "This Week": chatHistory.filter(chat => !["Today", "Yesterday"].includes(chat.date) && (chat.date.includes("days ago") || chat.date.includes("week ago")))
+    Today: filteredHistory.filter(chat => chat.date === "Today"),
+    Yesterday: filteredHistory.filter(chat => chat.date === "Yesterday"),
+    "This Week": filteredHistory.filter(chat => !["Today", "Yesterday"].includes(chat.date) && (chat.date.includes("days ago") || chat.date.includes("week ago")))
+  };
+
+  const handleNewChat = () => {
+    if (onNewChat) {
+      onNewChat();
+    }
+    console.log('Starting new chat...');
+  };
+
+  const handleClearHistory = () => {
+    if (onClearHistory) {
+      onClearHistory();
+    }
+    console.log('Clearing chat history...');
+    // You can add a confirmation dialog here if needed
+  };
+
+  const handleSettings = () => {
+    console.log('Opening settings...');
+    // This could open a settings modal or navigate to settings page
+  };
+
+  const handleHelp = () => {
+    console.log('Opening help...');
+    // This could open a help modal or navigate to help page
+  };
+
+  const handleChatSelect = (chatId: number) => {
+    console.log(`Loading chat ${chatId}...`);
+    // This would load the selected chat conversation
   };
 
   return (
@@ -130,7 +170,10 @@ export const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
           )}
         </div>
         
-        <Button className="w-full mb-3 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white shadow-lg">
+        <Button 
+          onClick={handleNewChat}
+          className="w-full mb-3 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white shadow-lg"
+        >
           <Plus className="h-4 w-4 mr-2" />
           New Chat
         </Button>
@@ -139,6 +182,8 @@ export const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input 
             placeholder="Search conversations..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
           />
         </div>
@@ -158,6 +203,7 @@ export const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
                   {chats.map((chat) => (
                     <div
                       key={chat.id}
+                      onClick={() => handleChatSelect(chat.id)}
                       className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-all duration-200 group border border-transparent hover:border-gray-700"
                     >
                       <div className="flex items-start gap-3">
@@ -187,21 +233,39 @@ export const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
                 </div>
               )
             ))}
+            {filteredHistory.length === 0 && searchTerm && (
+              <div className="text-center text-gray-400 py-8">
+                <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>No conversations found matching "{searchTerm}"</p>
+              </div>
+            )}
           </div>
         </ScrollArea>
       </div>
 
       {/* Footer - Fixed at bottom */}
       <div className="p-4 border-t border-gray-700 space-y-2 flex-shrink-0">
-        <Button variant="ghost" className="w-full justify-start text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+        <Button 
+          variant="ghost" 
+          onClick={handleClearHistory}
+          className="w-full justify-start text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+        >
           <History className="h-4 w-4 mr-3" />
           Clear History
         </Button>
-        <Button variant="ghost" className="w-full justify-start text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+        <Button 
+          variant="ghost" 
+          onClick={handleSettings}
+          className="w-full justify-start text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+        >
           <Settings className="h-4 w-4 mr-3" />
           Settings
         </Button>
-        <Button variant="ghost" className="w-full justify-start text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+        <Button 
+          variant="ghost" 
+          onClick={handleHelp}
+          className="w-full justify-start text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+        >
           <HelpCircle className="h-4 w-4 mr-3" />
           Help & FAQ
         </Button>
