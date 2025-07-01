@@ -50,12 +50,38 @@ export const useChat = () => {
 
       if (error) {
         console.error('Supabase function error:', error);
-        throw new Error(error.message || 'Failed to get response from AI');
+        
+        // Handle different types of errors
+        let errorMessage = 'Sorry, I encountered an error. Please try again.';
+        
+        if (error.message) {
+          if (error.message.includes('API key')) {
+            errorMessage = 'OpenAI API key configuration issue. Please check your API key.';
+          } else if (error.message.includes('rate limit')) {
+            errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+          } else if (error.message.includes('network') || error.message.includes('timeout')) {
+            errorMessage = 'Network error. Please check your connection and try again.';
+          } else {
+            errorMessage = `Error: ${error.message}`;
+          }
+        }
+        
+        throw new Error(errorMessage);
       }
 
-      if (!data || !data.message) {
+      if (!data) {
+        console.error('No data received from edge function');
+        throw new Error('No response received from the AI service');
+      }
+
+      if (data.error) {
+        console.error('Error in edge function response:', data.error);
+        throw new Error(data.error);
+      }
+
+      if (!data.message) {
         console.error('No message in response:', data);
-        throw new Error('No response received from AI');
+        throw new Error('Invalid response format from AI service');
       }
 
       const assistantMessage: Message = {
@@ -70,7 +96,7 @@ export const useChat = () => {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`,
+        content: error instanceof Error ? error.message : 'Sorry, I encountered an error. Please try again.',
         role: 'assistant',
         timestamp: new Date(),
       };

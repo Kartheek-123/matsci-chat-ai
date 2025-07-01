@@ -17,11 +17,12 @@ serve(async (req) => {
     console.log('Chat completion function called');
     
     const requestData = await req.json()
-    console.log('Request data:', requestData);
+    console.log('Request data received:', JSON.stringify(requestData, null, 2));
     
     const { messages } = requestData
     
     if (!messages || !Array.isArray(messages)) {
+      console.error('Messages array is missing or invalid:', messages);
       throw new Error('Messages array is required')
     }
     
@@ -31,9 +32,9 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured')
     }
 
-    console.log('Making request to OpenAI API...');
+    console.log('Making request to OpenAI API with', messages.length, 'messages...');
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
@@ -63,18 +64,29 @@ serve(async (req) => {
       }),
     })
 
-    console.log('OpenAI API response status:', response.status);
+    console.log('OpenAI API response status:', openAIResponse.status);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+    if (!openAIResponse.ok) {
+      const errorText = await openAIResponse.text();
+      console.error('OpenAI API error response:', errorText);
+      
+      // Handle specific OpenAI error cases
+      if (openAIResponse.status === 401) {
+        throw new Error('Invalid OpenAI API key. Please check your API key configuration.');
+      } else if (openAIResponse.status === 429) {
+        throw new Error('OpenAI API rate limit exceeded. Please try again later.');
+      } else if (openAIResponse.status === 500) {
+        throw new Error('OpenAI API is experiencing issues. Please try again later.');
+      } else {
+        throw new Error(`OpenAI API error (${openAIResponse.status}): ${errorText}`);
+      }
     }
 
-    const data = await response.json()
-    console.log('OpenAI API response data:', data);
+    const data = await openAIResponse.json()
+    console.log('OpenAI API response received successfully');
     
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response format:', data);
       throw new Error('Invalid response format from OpenAI API')
     }
 
@@ -83,12 +95,13 @@ serve(async (req) => {
       usage: data.usage 
     };
 
-    console.log('Sending response:', responseData);
+    console.log('Sending successful response');
 
     return new Response(
       JSON.stringify(responseData),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
       },
     )
   } catch (error) {
@@ -99,10 +112,12 @@ serve(async (req) => {
       details: error.toString()
     };
 
+    console.log('Sending error response:', errorResponse);
+
     return new Response(
       JSON.stringify(errorResponse),
       {
-        status: 500,
+        status: 400, // Changed from 500 to 400 for client errors
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     )
