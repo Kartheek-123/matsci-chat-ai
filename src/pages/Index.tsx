@@ -7,16 +7,19 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [chatKey, setChatKey] = useState(0); // Key to force ChatInterface re-render
   const isMobile = useIsMobile();
 
   const handleNewChat = () => {
-    // This will trigger a new chat session
-    window.location.reload(); // Simple way to start fresh
+    // Force a new chat by re-rendering the ChatInterface component
+    setChatKey(prev => prev + 1);
+    console.log('Starting new chat...');
   };
 
   const handleClearHistory = () => {
-    // This would clear the chat history from localStorage or state
+    // Clear chat history from localStorage and force re-render
     localStorage.removeItem('chatHistory');
+    setChatKey(prev => prev + 1);
     console.log('Chat history cleared');
   };
 
@@ -37,7 +40,7 @@ const Index = () => {
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
           isMobile={isMobile}
         />
-        <ChatInterface />
+        <ChatInterface key={chatKey} />
       </div>
       
       {/* Mobile overlay */}

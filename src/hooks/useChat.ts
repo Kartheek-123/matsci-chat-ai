@@ -27,16 +27,36 @@ export const useChat = () => {
     setIsLoading(true);
 
     try {
+      // Get all messages for context
+      const conversationMessages = [...messages, userMessage];
+      
+      console.log('Sending message to edge function:', {
+        messages: conversationMessages.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }))
+      });
+
       const { data, error } = await supabase.functions.invoke('chat-completion', {
         body: {
-          messages: [...messages, userMessage].map(msg => ({
+          messages: conversationMessages.map(msg => ({
             role: msg.role,
             content: msg.content
           }))
         }
       });
 
-      if (error) throw error;
+      console.log('Edge function response:', { data, error });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Failed to get response from AI');
+      }
+
+      if (!data || !data.message) {
+        console.error('No message in response:', data);
+        throw new Error('No response received from AI');
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -50,7 +70,7 @@ export const useChat = () => {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`,
         role: 'assistant',
         timestamp: new Date(),
       };
