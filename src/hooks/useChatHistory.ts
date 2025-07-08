@@ -44,11 +44,19 @@ export const useChatHistory = () => {
   }, [chatHistory]);
 
   const saveChatSession = (messages: Message[]) => {
+    console.log('Saving chat session with messages:', messages.length);
     if (messages.length === 0) return;
 
     // Get the first user message as the title
     const firstUserMessage = messages.find(msg => msg.role === 'user');
     if (!firstUserMessage) return;
+
+    const sessionId = firstUserMessage.id; // Use first message ID as session identifier
+    
+    // Check if this conversation already exists
+    const existingSessionIndex = chatHistory.findIndex(session => 
+      session.messages.length > 0 && session.messages[0].id === sessionId
+    );
 
     const now = new Date();
     const title = firstUserMessage.content.slice(0, 50) + (firstUserMessage.content.length > 50 ? '...' : '');
@@ -59,18 +67,30 @@ export const useChatHistory = () => {
       firstAssistantMessage.content.slice(0, 100) + (firstAssistantMessage.content.length > 100 ? '...' : '') :
       'No response yet';
 
-    const newSession: ChatSession = {
-      id: Date.now(),
+    const sessionData: ChatSession = {
+      id: existingSessionIndex >= 0 ? chatHistory[existingSessionIndex].id : Date.now(),
       title,
       preview,
       date: getRelativeDate(now),
       time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       messageCount: messages.length,
       messages: [...messages],
-      createdAt: now
+      createdAt: existingSessionIndex >= 0 ? chatHistory[existingSessionIndex].createdAt : now
     };
 
-    setChatHistory(prev => [newSession, ...prev]);
+    if (existingSessionIndex >= 0) {
+      // Update existing session
+      setChatHistory(prev => {
+        const updated = [...prev];
+        updated[existingSessionIndex] = sessionData;
+        return updated;
+      });
+    } else {
+      // Add new session
+      console.log('Adding new chat session:', sessionData.title);
+      setChatHistory(prev => [sessionData, ...prev]);
+    }
+    console.log('Chat history updated, total sessions:', chatHistory.length + 1);
   };
 
   const clearHistory = () => {

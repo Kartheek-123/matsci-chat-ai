@@ -92,6 +92,12 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      
+      // Auto-save the conversation after each assistant response
+      const updatedMessages = [...messages, userMessage, assistantMessage];
+      if (onChatSave && updatedMessages.length > 0) {
+        onChatSave(updatedMessages);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
@@ -101,6 +107,12 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
+      
+      // Auto-save even error conversations
+      const updatedMessages = [...messages, userMessage, errorMessage];
+      if (onChatSave && updatedMessages.length > 0) {
+        onChatSave(updatedMessages);
+      }
     } finally {
       setIsLoading(false);
     }

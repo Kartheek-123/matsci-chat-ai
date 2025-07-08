@@ -30,6 +30,7 @@ const Index = () => {
   };
 
   const handleChatSave = (messages: Message[]) => {
+    console.log('handleChatSave called with messages:', messages.length);
     saveChatSession(messages);
   };
 
