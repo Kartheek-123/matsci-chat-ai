@@ -6,10 +6,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageBubble } from '@/components/MessageBubble';
 import { WelcomeScreen } from '@/components/WelcomeScreen';
-import { useChat } from '@/hooks/useChat';
+import { useChat, Message } from '@/hooks/useChat';
 
-export const ChatInterface = () => {
-  const { messages, isLoading, sendMessage } = useChat();
+interface ChatInterfaceProps {
+  onChatSave?: (messages: Message[]) => void;
+  loadedMessages?: Message[] | null;
+}
+
+export const ChatInterface = ({ onChatSave, loadedMessages }: ChatInterfaceProps) => {
+  const { messages, isLoading, sendMessage, loadMessages } = useChat(onChatSave);
   const [input, setInput] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -26,6 +31,12 @@ export const ChatInterface = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (loadedMessages) {
+      loadMessages(loadedMessages);
+    }
+  }, [loadedMessages, loadMessages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

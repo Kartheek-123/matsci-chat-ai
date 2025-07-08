@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { ChatSession } from '@/hooks/useChatHistory';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -12,17 +13,11 @@ interface SidebarProps {
   isMobile: boolean;
   onNewChat?: () => void;
   onClearHistory?: () => void;
-  chatHistory?: Array<{
-    id: number;
-    title: string;
-    preview: string;
-    date: string;
-    time: string;
-    messageCount: number;
-  }>;
+  onLoadChat?: (chatId: number) => void;
+  chatHistory?: ChatSession[];
 }
 
-export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory, chatHistory = [] }: SidebarProps) => {
+export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory, onLoadChat, chatHistory = [] }: SidebarProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -73,7 +68,9 @@ export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory, 
 
   const handleChatSelect = (chatId: number) => {
     console.log(`Loading chat ${chatId}...`);
-    // This would load the selected chat conversation
+    if (onLoadChat) {
+      onLoadChat(chatId);
+    }
   };
 
   return (

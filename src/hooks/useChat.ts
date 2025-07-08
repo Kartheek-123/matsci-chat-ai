@@ -9,7 +9,7 @@ export interface Message {
   timestamp: Date;
 }
 
-export const useChat = () => {
+export const useChat = (onChatSave?: (messages: Message[]) => void) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -107,7 +107,15 @@ export const useChat = () => {
   };
 
   const clearMessages = () => {
+    // Save current chat before clearing if it has messages
+    if (messages.length > 0 && onChatSave) {
+      onChatSave(messages);
+    }
     setMessages([]);
+  };
+
+  const loadMessages = (loadedMessages: Message[]) => {
+    setMessages(loadedMessages);
   };
 
   return {
@@ -115,5 +123,6 @@ export const useChat = () => {
     isLoading,
     sendMessage,
     clearMessages,
+    loadMessages,
   };
 };
