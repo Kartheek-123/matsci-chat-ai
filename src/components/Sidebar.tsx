@@ -12,100 +12,26 @@ interface SidebarProps {
   isMobile: boolean;
   onNewChat?: () => void;
   onClearHistory?: () => void;
+  chatHistory?: Array<{
+    id: number;
+    title: string;
+    preview: string;
+    date: string;
+    time: string;
+    messageCount: number;
+  }>;
 }
 
-export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory }: SidebarProps) => {
+export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory, chatHistory = [] }: SidebarProps) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   
   const sidebarClasses = cn(
     "bg-gray-900 text-white w-80 flex flex-col transition-transform duration-300 ease-in-out shadow-xl",
     isMobile ? "fixed left-0 top-0 z-50 h-screen" : "relative h-screen",
     isMobile && !isOpen && "-translate-x-full"
   );
-
-  // Enhanced sample chat history with more realistic data
-  const chatHistory = [
-    { 
-      id: 1, 
-      title: "Properties of Graphene and Carbon Nanotubes", 
-      preview: "What are the mechanical properties of graphene compared to...",
-      date: "Today",
-      time: "2:30 PM",
-      messageCount: 12
-    },
-    { 
-      id: 2, 
-      title: "Steel Alloy Compositions for Aerospace", 
-      preview: "I need information about high-strength steel alloys...",
-      date: "Today",
-      time: "10:15 AM",
-      messageCount: 8
-    },
-    { 
-      id: 3, 
-      title: "Polymer Crystallization Mechanisms", 
-      preview: "Can you explain the different types of polymer...",
-      date: "Yesterday",
-      time: "4:45 PM",
-      messageCount: 15
-    },
-    { 
-      id: 4, 
-      title: "Ceramic Phase Diagrams Analysis", 
-      preview: "How do I interpret this Al2O3-SiO2 phase diagram?",
-      date: "Yesterday",
-      time: "11:20 AM",
-      messageCount: 6
-    },
-    { 
-      id: 5, 
-      title: "Nanomaterial Synthesis Methods", 
-      preview: "What are the most effective synthesis routes for...",
-      date: "2 days ago",
-      time: "3:10 PM",
-      messageCount: 20
-    },
-    { 
-      id: 6, 
-      title: "Semiconductor Band Structure", 
-      preview: "Explain the relationship between band gap and...",
-      date: "3 days ago",
-      time: "1:55 PM",
-      messageCount: 9
-    },
-    { 
-      id: 7, 
-      title: "Corrosion Resistance in Marine Environments", 
-      preview: "Which materials perform best in saltwater exposure?",
-      date: "1 week ago",
-      time: "9:30 AM",
-      messageCount: 11
-    },
-    { 
-      id: 8, 
-      title: "Crystal Structure Analysis", 
-      preview: "Understanding face-centered cubic structures...",
-      date: "1 week ago",
-      time: "2:15 PM",
-      messageCount: 7
-    },
-    { 
-      id: 9, 
-      title: "Thermal Conductivity Measurements", 
-      preview: "Best practices for measuring thermal properties...",
-      date: "2 weeks ago",
-      time: "11:45 AM",
-      messageCount: 13
-    },
-    { 
-      id: 10, 
-      title: "Composite Material Design", 
-      preview: "Fiber reinforcement strategies for composites...",
-      date: "2 weeks ago",
-      time: "4:30 PM",
-      messageCount: 18
-    }
-  ];
 
   // Filter chat history based on search term
   const filteredHistory = chatHistory.filter(chat =>
@@ -123,25 +49,26 @@ export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory }
     if (onNewChat) {
       onNewChat();
     }
-    console.log('Starting new chat...');
+    if (isMobile) {
+      onClose();
+    }
   };
 
   const handleClearHistory = () => {
     if (onClearHistory) {
-      onClearHistory();
+      const confirmed = window.confirm('Are you sure you want to clear all chat history? This action cannot be undone.');
+      if (confirmed) {
+        onClearHistory();
+      }
     }
-    console.log('Clearing chat history...');
-    // You can add a confirmation dialog here if needed
   };
 
   const handleSettings = () => {
-    console.log('Opening settings...');
-    // This could open a settings modal or navigate to settings page
+    setShowSettings(true);
   };
 
   const handleHelp = () => {
-    console.log('Opening help...');
-    // This could open a help modal or navigate to help page
+    setShowHelp(true);
   };
 
   const handleChatSelect = (chatId: number) => {
@@ -239,6 +166,13 @@ export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory }
                 <p>No conversations found matching "{searchTerm}"</p>
               </div>
             )}
+            {chatHistory.length === 0 && !searchTerm && (
+              <div className="text-center text-gray-400 py-8">
+                <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>No chat history yet</p>
+                <p className="text-sm mt-1">Start a new conversation to see it here</p>
+              </div>
+            )}
           </div>
         </ScrollArea>
       </div>
@@ -270,6 +204,72 @@ export const Sidebar = ({ isOpen, onClose, isMobile, onNewChat, onClearHistory }
           Help & FAQ
         </Button>
       </div>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Settings</h3>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="space-y-4 text-gray-700">
+              <div>
+                <h4 className="font-medium mb-2">Theme</h4>
+                <p className="text-sm text-gray-600">Dark mode is currently active</p>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Language</h4>
+                <p className="text-sm text-gray-600">English (US)</p>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Data</h4>
+                <p className="text-sm text-gray-600">Chat history is stored locally</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Help Modal */}
+      {showHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Help & FAQ</h3>
+              <button
+                onClick={() => setShowHelp(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="space-y-4 text-gray-700">
+              <div>
+                <h4 className="font-medium mb-2">How to start a new chat?</h4>
+                <p className="text-sm text-gray-600">Click the "New Chat" button in the sidebar</p>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">How to clear chat history?</h4>
+                <p className="text-sm text-gray-600">Use the "Clear History" button in the sidebar footer</p>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">How to search conversations?</h4>
+                <p className="text-sm text-gray-600">Use the search box at the top of the sidebar</p>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Need more help?</h4>
+                <p className="text-sm text-gray-600">Contact support for additional assistance</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
