@@ -37,23 +37,29 @@ export const Header = ({ onMenuClick, isMobile }: HeaderProps) => {
       </div>
       
       <div className="flex items-center gap-3">
-        {user && (
-          <div className="hidden sm:flex flex-col items-end">
-            <span className="text-sm font-medium text-gray-900">
-              {user.firstName} {user.lastName}
-            </span>
-            <span className="text-xs text-gray-500">
-              {user.primaryEmailAddress?.emailAddress}
-            </span>
+        {user ? (
+          <>
+            <div className="hidden sm:flex flex-col items-end">
+              <span className="text-sm font-medium text-gray-900">
+                {user.firstName} {user.lastName}
+              </span>
+              <span className="text-xs text-gray-500">
+                {user.primaryEmailAddress?.emailAddress}
+              </span>
+            </div>
+            <UserButton 
+              appearance={{
+                elements: {
+                  avatarBox: "w-8 h-8"
+                }
+              }}
+            />
+          </>
+        ) : (
+          <div className="text-sm text-gray-600">
+            Guest Mode
           </div>
         )}
-        <UserButton 
-          appearance={{
-            elements: {
-              avatarBox: "w-8 h-8"
-            }
-          }}
-        />
       </div>
     </header>
   );

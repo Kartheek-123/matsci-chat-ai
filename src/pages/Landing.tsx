@@ -106,11 +106,18 @@ const Landing = () => {
             to characterization and applications - MaterialScienceGPT is your research companion powered by advanced AI.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              onClick={() => navigate('/chat')} 
+              size="lg" 
+              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-4 text-lg"
+            >
+              Try Chat Now
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             <SignedOut>
               <SignUpButton mode="modal">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-4 text-lg">
-                  Start Research Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
+                  Sign Up for Free
                 </Button>
               </SignUpButton>
               <SignInButton mode="modal">
