@@ -1,14 +1,8 @@
 
 import React from 'react';
-import { User, Atom } from 'lucide-react';
+import { User, Atom, Image as ImageIcon, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface Message {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant';
-  timestamp: Date;
-}
+import type { Message } from '@/hooks/useChat';
 
 interface MessageBubbleProps {
   message: Message;
@@ -49,10 +43,44 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
             })}
           </span>
         </div>
-        <div className="prose prose-sm max-w-none">
-          <p className="text-foreground whitespace-pre-wrap leading-relaxed">
-            {message.content}
-          </p>
+        <div className="space-y-3">
+          {/* Attachments */}
+          {message.attachments && message.attachments.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-2">
+                {message.attachments.map(att => (
+                  <div key={att.id} className="border border-border bg-muted/50 rounded-md p-2 flex items-center gap-2">
+                    {att.type === 'image' ? (
+                      <>
+                        <img
+                          src={att.previewUrl || att.dataUrl}
+                          alt={att.name || 'Attached image'}
+                          className="h-20 w-20 object-cover rounded"
+                        />
+                        <span className="text-xs text-muted-foreground truncate max-w-[120px]">
+                          {att.name || 'image'}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground truncate max-w-[160px]">
+                          {att.name || 'document.pdf'}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Text */}
+          <div className="prose prose-sm max-w-none">
+            <p className="text-foreground whitespace-pre-wrap leading-relaxed">
+              {message.content}
+            </p>
+          </div>
         </div>
       </div>
     </div>
