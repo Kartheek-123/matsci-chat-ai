@@ -51,16 +51,25 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
                 {message.attachments.map(att => (
                   <div key={att.id} className="border border-border bg-muted/50 rounded-md p-2 flex items-center gap-2">
                     {att.type === 'image' ? (
-                      <>
-                        <img
-                          src={att.previewUrl || att.dataUrl}
-                          alt={att.name || 'Attached image'}
-                          className="h-20 w-20 object-cover rounded"
-                        />
-                        <span className="text-xs text-muted-foreground truncate max-w-[120px]">
-                          {att.name || 'image'}
-                        </span>
-                      </>
+                      (att.previewUrl || att.dataUrl) ? (
+                        <>
+                          <img
+                            src={att.previewUrl || att.dataUrl}
+                            alt={att.name || 'Attached image'}
+                            className="h-20 w-20 object-cover rounded"
+                          />
+                          <span className="text-xs text-muted-foreground truncate max-w-[120px]">
+                            {att.name || 'image'}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground truncate max-w-[160px]">
+                            {att.name || 'image'}
+                          </span>
+                        </>
+                      )
                     ) : (
                       <>
                         <FileText className="h-4 w-4 text-muted-foreground" />

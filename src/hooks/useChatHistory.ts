@@ -40,7 +40,24 @@ export const useChatHistory = () => {
 
   // Save chat history to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    try {
+      // Persist a lightweight version (strip heavy base64 data)
+      const lightweightHistory = chatHistory.map(session => ({
+        ...session,
+        messages: session.messages.map(msg => ({
+          ...msg,
+          attachments: msg.attachments?.map(att => ({
+            ...att,
+            // Keep keys but drop heavy payloads to avoid quota errors
+            dataUrl: '',
+            previewUrl: undefined,
+          })),
+        })),
+      }));
+      localStorage.setItem('chatHistory', JSON.stringify(lightweightHistory));
+    } catch (err) {
+      console.error('Failed to persist chat history (likely quota exceeded):', err);
+    }
   }, [chatHistory]);
 
   const saveChatSession = (messages: Message[]) => {
