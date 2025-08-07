@@ -41,12 +41,28 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
       // Get all messages for context
       const conversationMessages = [...messages, userMessage];
       
+      // Collect all PDFs from the conversation history to maintain context
+      const allPdfs: Attachment[] = [];
+      conversationMessages.forEach(msg => {
+        if (msg.attachments) {
+          msg.attachments.forEach(att => {
+            if (att.type === 'pdf' && att.dataUrl && !allPdfs.find(pdf => pdf.id === att.id)) {
+              allPdfs.push(att);
+            }
+          });
+        }
+      });
+
+      // Combine current message attachments with conversation PDFs
+      const contextAttachments = [
+        ...(userMessage.attachments?.filter(att => att.type === 'image') || []),
+        ...allPdfs
+      ];
+      
       console.log('Sending message to edge function:', {
-        messages: conversationMessages.map(msg => ({
-          role: msg.role,
-          content: msg.content
-        })),
-        attachments: userMessage.attachments?.map(a => ({ mimeType: a.mimeType, size: a.dataUrl?.length ?? 0 }))
+        messages: conversationMessages.length,
+        attachments: contextAttachments.length,
+        pdfs: allPdfs.length
       });
 
       const { data, error } = await supabase.functions.invoke('chat-completion', {
@@ -55,12 +71,12 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
             role: msg.role,
             content: msg.content
           })),
-          attachments: userMessage.attachments?.map(a => ({
+          attachments: contextAttachments.map(a => ({
             mimeType: a.mimeType,
             data: a.dataUrl,
             name: a.name,
             type: a.type,
-          })) ?? []
+          }))
         }
       });
 
