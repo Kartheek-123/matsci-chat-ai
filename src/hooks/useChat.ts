@@ -2,25 +2,36 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+export interface Attachment {
+  id: string;
+  type: 'image' | 'pdf';
+  mimeType: string;
+  dataUrl: string; // data URL (base64) for sending to the edge function
+  name?: string;
+  previewUrl?: string; // object URL for local preview (images)
+}
+
 export interface Message {
   id: string;
   content: string;
   role: 'user' | 'assistant';
   timestamp: Date;
+  attachments?: Attachment[];
 }
 
 export const useChat = (onChatSave?: (messages: Message[]) => void) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendMessage = async (content: string) => {
-    if (!content.trim()) return;
+  const sendMessage = async (content: string, attachments?: Attachment[]) => {
+    if (!content.trim() && (!attachments || attachments.length === 0)) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       content,
       role: 'user',
       timestamp: new Date(),
+      attachments: attachments && attachments.length > 0 ? attachments : undefined,
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -34,7 +45,8 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
         messages: conversationMessages.map(msg => ({
           role: msg.role,
           content: msg.content
-        }))
+        })),
+        attachments: userMessage.attachments?.map(a => ({ mimeType: a.mimeType, size: a.dataUrl?.length ?? 0 }))
       });
 
       const { data, error } = await supabase.functions.invoke('chat-completion', {
@@ -42,7 +54,13 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
           messages: conversationMessages.map(msg => ({
             role: msg.role,
             content: msg.content
-          }))
+          })),
+          attachments: userMessage.attachments?.map(a => ({
+            mimeType: a.mimeType,
+            data: a.dataUrl,
+            name: a.name,
+            type: a.type,
+          })) ?? []
         }
       });
 
@@ -56,7 +74,7 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
         
         if (error.message) {
           if (error.message.includes('API key')) {
-            errorMessage = 'OpenAI API key configuration issue. Please check your API key.';
+            errorMessage = 'Gemini API key configuration issue. Please check your API key.';
           } else if (error.message.includes('rate limit')) {
             errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
           } else if (error.message.includes('network') || error.message.includes('timeout')) {

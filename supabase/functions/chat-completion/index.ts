@@ -19,7 +19,7 @@ serve(async (req) => {
     const requestData = await req.json()
     console.log('Request data received:', JSON.stringify(requestData, null, 2));
     
-    const { messages } = requestData
+    const { messages, attachments } = requestData
     
     if (!messages || !Array.isArray(messages)) {
       console.error('Messages array is missing or invalid:', messages);
@@ -54,22 +54,38 @@ serve(async (req) => {
     
     const fullPrompt = `${systemMessage}\n\n${conversationText}\n\nAssistant:`;
 
+    // Prepare attachment parts (images, pdfs) as inlineData
+    const attachmentParts = Array.isArray(attachments)
+      ? attachments
+          .filter((a: any) => typeof a?.mimeType === 'string' && typeof a?.data === 'string')
+          .map((a: any) => {
+            const data = a.data.includes('base64,') ? a.data.split('base64,')[1] : a.data
+            return {
+              inlineData: {
+                mimeType: a.mimeType,
+                data,
+              }
+            }
+          })
+      : [];
+
     const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: fullPrompt
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 1000,
-        }
-      }),
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: fullPrompt },
+              ...attachmentParts,
+            ]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1000,
+          }
+        }),
     })
 
     console.log('Gemini API response status:', geminiResponse.status);

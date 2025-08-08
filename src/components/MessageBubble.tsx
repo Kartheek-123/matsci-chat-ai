@@ -1,14 +1,8 @@
 
 import React from 'react';
-import { User, Atom } from 'lucide-react';
+import { User, Atom, Image as ImageIcon, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface Message {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant';
-  timestamp: Date;
-}
+import type { Message } from '@/hooks/useChat';
 
 interface MessageBubbleProps {
   message: Message;
@@ -20,39 +14,82 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
   return (
     <div className={cn(
       "flex gap-3 p-4 rounded-lg",
-      isUser ? "bg-blue-50 ml-12" : "bg-white border border-gray-200"
+      isUser ? "bg-secondary ml-12" : "bg-card border border-border"
     )}>
       {/* Avatar */}
       <div className={cn(
         "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
         isUser 
-          ? "bg-blue-600" 
-          : "bg-gradient-to-r from-blue-600 to-green-600"
+          ? "bg-primary" 
+          : "bg-primary"
       )}>
         {isUser ? (
-          <User className="h-4 w-4 text-white" />
+          <User className="h-4 w-4 text-primary-foreground" />
         ) : (
-          <Atom className="h-4 w-4 text-white" />
+          <Atom className="h-4 w-4 text-primary-foreground" />
         )}
       </div>
 
       {/* Message Content */}
       <div className="flex-1 space-y-2">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-sm text-gray-900">
+          <span className="font-medium text-sm text-foreground">
             {isUser ? 'You' : 'MaterialScienceGPT'}
           </span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {message.timestamp.toLocaleTimeString([], { 
               hour: '2-digit', 
               minute: '2-digit' 
             })}
           </span>
         </div>
-        <div className="prose prose-sm max-w-none">
-          <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">
-            {message.content}
-          </p>
+        <div className="space-y-3">
+          {/* Attachments */}
+          {message.attachments && message.attachments.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-2">
+                {message.attachments.map(att => (
+                  <div key={att.id} className="border border-border bg-muted/50 rounded-md p-2 flex items-center gap-2">
+                    {att.type === 'image' ? (
+                      (att.previewUrl || att.dataUrl) ? (
+                        <>
+                          <img
+                            src={att.previewUrl || att.dataUrl}
+                            alt={att.name || 'Attached image'}
+                            className="h-20 w-20 object-cover rounded"
+                          />
+                          <span className="text-xs text-muted-foreground truncate max-w-[120px]">
+                            {att.name || 'image'}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground truncate max-w-[160px]">
+                            {att.name || 'image'}
+                          </span>
+                        </>
+                      )
+                    ) : (
+                      <>
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground truncate max-w-[160px]">
+                          {att.name || 'document.pdf'}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Text */}
+          <div className="prose prose-sm max-w-none">
+            <p className="text-foreground whitespace-pre-wrap leading-relaxed">
+              {message.content}
+            </p>
+          </div>
         </div>
       </div>
     </div>
