@@ -14,40 +14,32 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Chat completion function called');
-    
     const requestData = await req.json()
-    console.log('Request data received:', JSON.stringify(requestData, null, 2));
-    
     const { messages, attachments } = requestData
     
     if (!messages || !Array.isArray(messages)) {
-      console.error('Messages array is missing or invalid:', messages);
       throw new Error('Messages array is required')
     }
     
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
     if (!geminiApiKey) {
-      console.error('Gemini API key not found in environment variables')
       throw new Error('Gemini API key not configured')
     }
 
-    console.log('Making request to Gemini API with', messages.length, 'messages...');
+    // Enhanced system message for better PDF and image analysis
+    const systemMessage = `You are MaterialScienceGPT, an advanced AI assistant specializing in materials science and engineering. 
 
-    // Convert messages to Gemini format
-    const systemMessage = `You are MaterialScienceGPT, an AI assistant specialized in material science. You provide accurate, detailed, and helpful information about:
-    - Material properties (mechanical, thermal, electrical, optical)
-    - Material synthesis and processing methods
-    - Characterization techniques and analysis
-    - Applications of various materials
-    - Crystal structures and phase diagrams
-    - Nanomaterials and advanced materials
-    - Corrosion and degradation mechanisms
-    - Material selection and design
-    
-    Always provide scientific explanations with examples when appropriate. Be precise and educational in your responses.`;
+    When analyzing PDFs, extract and reference specific information from the document content including:
+    - Research data, experimental results, and technical specifications
+    - Material properties, synthesis methods, and characterization data
+    - Graphs, tables, and numerical data presented in the document
+    - Always cite specific sections or findings from the PDF when answering questions
 
-    // Combine system message with conversation
+    When analyzing images, identify materials, microstructures, defects, crystal structures, and material properties.
+
+    Provide detailed, technical responses with scientific accuracy. Reference uploaded documents directly in your answers.`;
+
+    // Optimize conversation formatting
     const conversationText = messages.map(msg => 
       `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
     ).join('\n\n');
@@ -83,7 +75,8 @@ serve(async (req) => {
           }],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 1000,
+            maxOutputTokens: 2000,
+            candidateCount: 1
           }
         }),
     })
