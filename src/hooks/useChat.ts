@@ -2,36 +2,25 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface Attachment {
-  id: string;
-  type: 'image' | 'pdf';
-  mimeType: string;
-  dataUrl: string; // data URL (base64) for sending to the edge function
-  name?: string;
-  previewUrl?: string; // object URL for local preview (images)
-}
-
 export interface Message {
   id: string;
   content: string;
   role: 'user' | 'assistant';
   timestamp: Date;
-  attachments?: Attachment[];
 }
 
 export const useChat = (onChatSave?: (messages: Message[]) => void) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendMessage = async (content: string, attachments?: Attachment[]) => {
-    if (!content.trim() && (!attachments || attachments.length === 0)) return;
+  const sendMessage = async (content: string) => {
+    if (!content.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       content,
       role: 'user',
       timestamp: new Date(),
-      attachments: attachments && attachments.length > 0 ? attachments : undefined,
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -41,28 +30,11 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
       // Get all messages for context
       const conversationMessages = [...messages, userMessage];
       
-      // Collect all PDFs from the conversation history to maintain context
-      const allPdfs: Attachment[] = [];
-      conversationMessages.forEach(msg => {
-        if (msg.attachments) {
-          msg.attachments.forEach(att => {
-            if (att.type === 'pdf' && att.dataUrl && !allPdfs.find(pdf => pdf.id === att.id)) {
-              allPdfs.push(att);
-            }
-          });
-        }
-      });
-
-      // Combine current message attachments with conversation PDFs
-      const contextAttachments = [
-        ...(userMessage.attachments?.filter(att => att.type === 'image') || []),
-        ...allPdfs
-      ];
-      
       console.log('Sending message to edge function:', {
-        messages: conversationMessages.length,
-        attachments: contextAttachments.length,
-        pdfs: allPdfs.length
+        messages: conversationMessages.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }))
       });
 
       const { data, error } = await supabase.functions.invoke('chat-completion', {
@@ -70,12 +42,6 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
           messages: conversationMessages.map(msg => ({
             role: msg.role,
             content: msg.content
-          })),
-          attachments: contextAttachments.map(a => ({
-            mimeType: a.mimeType,
-            data: a.dataUrl,
-            name: a.name,
-            type: a.type,
           }))
         }
       });
@@ -90,7 +56,7 @@ export const useChat = (onChatSave?: (messages: Message[]) => void) => {
         
         if (error.message) {
           if (error.message.includes('API key')) {
-            errorMessage = 'Gemini API key configuration issue. Please check your API key.';
+            errorMessage = 'OpenAI API key configuration issue. Please check your API key.';
           } else if (error.message.includes('rate limit')) {
             errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
           } else if (error.message.includes('network') || error.message.includes('timeout')) {

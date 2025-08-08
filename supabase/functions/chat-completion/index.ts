@@ -14,71 +14,62 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Chat completion function called');
+    
     const requestData = await req.json()
-    const { messages, attachments } = requestData
+    console.log('Request data received:', JSON.stringify(requestData, null, 2));
+    
+    const { messages } = requestData
     
     if (!messages || !Array.isArray(messages)) {
+      console.error('Messages array is missing or invalid:', messages);
       throw new Error('Messages array is required')
     }
     
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
     if (!geminiApiKey) {
+      console.error('Gemini API key not found in environment variables')
       throw new Error('Gemini API key not configured')
     }
 
-    // Enhanced system message for better PDF and image analysis
-    const systemMessage = `You are MaterialScienceGPT, an advanced AI assistant specializing in materials science and engineering. 
+    console.log('Making request to Gemini API with', messages.length, 'messages...');
 
-    When analyzing PDFs, extract and reference specific information from the document content including:
-    - Research data, experimental results, and technical specifications
-    - Material properties, synthesis methods, and characterization data
-    - Graphs, tables, and numerical data presented in the document
-    - Always cite specific sections or findings from the PDF when answering questions
+    // Convert messages to Gemini format
+    const systemMessage = `You are MaterialScienceGPT, an AI assistant specialized in material science. You provide accurate, detailed, and helpful information about:
+    - Material properties (mechanical, thermal, electrical, optical)
+    - Material synthesis and processing methods
+    - Characterization techniques and analysis
+    - Applications of various materials
+    - Crystal structures and phase diagrams
+    - Nanomaterials and advanced materials
+    - Corrosion and degradation mechanisms
+    - Material selection and design
+    
+    Always provide scientific explanations with examples when appropriate. Be precise and educational in your responses.`;
 
-    When analyzing images, identify materials, microstructures, defects, crystal structures, and material properties.
-
-    Provide detailed, technical responses with scientific accuracy. Reference uploaded documents directly in your answers.`;
-
-    // Optimize conversation formatting
+    // Combine system message with conversation
     const conversationText = messages.map(msg => 
       `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
     ).join('\n\n');
     
     const fullPrompt = `${systemMessage}\n\n${conversationText}\n\nAssistant:`;
 
-    // Prepare attachment parts (images, pdfs) as inlineData
-    const attachmentParts = Array.isArray(attachments)
-      ? attachments
-          .filter((a: any) => typeof a?.mimeType === 'string' && typeof a?.data === 'string')
-          .map((a: any) => {
-            const data = a.data.includes('base64,') ? a.data.split('base64,')[1] : a.data
-            return {
-              inlineData: {
-                mimeType: a.mimeType,
-                data,
-              }
-            }
-          })
-      : [];
-
     const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: fullPrompt },
-              ...attachmentParts,
-            ]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 2000,
-            candidateCount: 1
-          }
-        }),
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: fullPrompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1000,
+        }
+      }),
     })
 
     console.log('Gemini API response status:', geminiResponse.status);
