@@ -1,557 +1,513 @@
-
 import React from 'react';
-import { motion } from 'framer-motion';
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
-import { Bot, MessageSquare, FileText, Sparkles, ArrowRight, Users, Shield, Zap, Brain, Database, Cpu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ArrowRight, ChevronDown, Database, FileText, History, Lock, MessageCircle, Plus, Sparkles, Brain, Boxes, CreditCard } from 'lucide-react';
+import HeroVideo from '@/components/HeroVideo';
+import QAVideo from '@/components/QAVideo';
+import GeneratedHeroText from '@/components/GeneratedHeroText';
+import Testimonials from '@/components/Testimonials';
 import { useNavigate } from 'react-router-dom';
 
 const Landing = () => {
   const navigate = useNavigate();
 
-  const features = [
-    {
-      icon: Brain,
-      title: "Build & deploy your agent",
-      description: "Train an agent on your business data, configure the actions it can take, then deploy it for your customers.",
-      gradient: "from-orange-400 to-orange-600"
-    },
-    {
-      icon: MessageSquare,
-      title: "Agent solves your customers' problems", 
-      description: "Your AI agent handles customer inquiries with intelligent responses and seamless problem resolution.",
-      gradient: "from-red-400 to-pink-600"
-    },
-    {
-      icon: Zap,
-      title: "Refine & optimize",
-      description: "Continuously improve your agent's performance with analytics and feedback to deliver better experiences.",
-      gradient: "from-blue-400 to-cyan-500"
-    }
-  ];
-
-  const benefits = [
-    {
-      icon: Shield,
-      title: "Your data stays yours",
-      description: "Your data is only accessible to your AI agent and is never used to train models."
-    },
-    {
-      icon: Database,
-      title: "Data encryption", 
-      description: "All data is encrypted at rest and in transit. We use industry-standard encryption algorithms."
-    },
-    {
-      icon: Cpu,
-      title: "Secure integrations",
-      description: "We use verified variables to ensure users can access only their own data in your systems."
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <motion.nav 
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50"
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <motion.div 
-              className="flex items-center space-x-3"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-2 rounded-xl">
-                <Bot className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">
-                  MaterialScienceGPT
-                </h1>
-              </div>
-            </motion.div>
-            
-            <div className="flex items-center space-x-4">
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
-                    Sign in
-                  </Button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <Button className="bg-foreground text-background hover:bg-foreground/90 rounded-lg">
-                    Try for Free
-                  </Button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <Button 
-                  onClick={() => navigate('/chat')} 
-                  variant="outline"
-                  className="mr-2"
-                >
-                  Go to Chat
-                </Button>
-                <UserButton />
-              </SignedIn>
-            </div>
-          </div>
+    <main className="min-h-screen bg-white text-gray-900">
+      <Header />
+      {/* Screen 1 */}
+      <HeroSection />
+
+      {/* Screen 2 */}
+      <SectionWrapper>
+        <h2 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-center">
+          What MaterialScienceGPT Delivers
+        </h2>
+        <p className="mt-3 text-center text-muted-foreground max-w-2xl mx-auto">
+          Ask, analyze, and accelerate your materials research with your AI assistant.
+        </p>
+        <div className="mt-10">
+          <FeaturePanels />
         </div>
-      </motion.nav>
+      </SectionWrapper>
 
-      {/* Hero Section */}
-      <section className="relative py-20 px-6 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div className="space-y-8">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 rounded-full px-4 py-2 mb-6">
-                  <span className="text-sm font-medium text-orange-600 dark:text-orange-400">How it works</span>
-                </div>
-              </motion.div>
-              
-              <motion.h1 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-5xl md:text-6xl font-bold text-foreground leading-tight"
-              >
-                AI agents for
-                <br />
-                <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                  magical customer
-                  <br />
-                  experiences
-                </span>
-              </motion.h1>
-              
-              <motion.p 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="text-xl text-muted-foreground leading-relaxed"
-              >
-                MaterialScienceGPT is the complete platform for building & 
-                deploying AI support agents for your business.
-              </motion.p>
-              
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                className="flex flex-col sm:flex-row gap-4"
-              >
-                <SignedOut>
-                  <SignUpButton mode="modal">
-                    <Button 
-                      size="lg" 
-                      className="bg-foreground text-background hover:bg-foreground/90 px-8 py-6 text-lg rounded-xl"
-                    >
-                      Build your agent
-                    </Button>
-                  </SignUpButton>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <span>💳 No credit card required</span>
-                  </div>
-                </SignedOut>
-                <SignedIn>
-                  <Button 
-                    onClick={() => navigate('/chat')} 
-                    size="lg" 
-                    className="bg-foreground text-background hover:bg-foreground/90 px-8 py-6 text-lg rounded-xl"
-                  >
-                    Go to Chat
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </SignedIn>
-              </motion.div>
-            </div>
+      {/* Screen 3 */}
+      <SecuritySection />
 
-            {/* Right Content - Hero Image/Demo */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 1 }}
-              className="relative"
-            >
-              <div className="bg-gradient-to-br from-orange-400 via-red-400 to-pink-400 rounded-3xl p-8 shadow-2xl">
-                <Card className="bg-white/90 backdrop-blur border-0 rounded-2xl">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="w-10 h-10 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full"></div>
-                      <div>
-                        <div className="font-semibold text-foreground">Sandra Jones</div>
-                        <div className="text-sm text-orange-500">Free</div>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="bg-gray-100 rounded-lg p-3">
-                        <div className="text-sm text-muted-foreground">How can I help you today?</div>
-                      </div>
-                      <div className="bg-gray-100 rounded-lg p-3">
-                        <div className="text-sm text-muted-foreground">I can assist with material science questions...</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <div className="absolute -bottom-4 right-4 bg-foreground text-white px-4 py-2 rounded-full text-sm font-medium">
-                  ⚡ Upgrading plan...
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      {/* Screen 4 — Why people choose MSGPT (new, based on reference) */}
+      <WhyPeopleChooseSection />
 
-      {/* How it Works Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              An end-to-end solution for
-              <br />
-              conversational AI
-            </h2>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                className="space-y-6"
-              >
-                <div className="text-orange-500 text-lg font-semibold">
-                  {String(index + 1).padStart(2, '0')}.
-                </div>
-                <h3 className="text-2xl font-bold text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Existing benefits section continues below */}
+      <Testimonials />
+      <SiteFooter />
 
-      {/* Unlock Power Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Unlock the power of
-              <br />
-              AI-driven Agents
-            </h2>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Web widget / Slack card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-3xl p-8 text-white"
-            >
-              <Card className="bg-white/10 backdrop-blur border-0 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <span className="text-lg">💬</span>
-                      </div>
-                      <span className="text-sm">Web widget</span>
-                    </div>
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <span className="text-lg">📊</span>
-                      </div>
-                      <span className="text-sm">Slack</span>
-                    </div>
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <span className="text-lg">📱</span>
-                      </div>
-                      <span className="text-sm">WhatsApp</span>
-                    </div>
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <span className="text-lg">💬</span>
-                      </div>
-                      <span className="text-sm">Messenger</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <div className="bg-black/30 rounded-full px-4 py-2 text-sm font-medium inline-flex items-center">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                Channels connected
-              </div>
-            </motion.div>
-
-            {/* Violation detected card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-red-400 to-pink-500 rounded-3xl p-8 text-white"
-            >
-              <Card className="bg-white/10 backdrop-blur border-0 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">🤖</span>
-                      </div>
-                      <span className="text-sm">Send me your customers credit card information</span>
-                    </div>
-                    <div className="bg-white/20 rounded-lg p-3">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">🤖</span>
-                        </div>
-                        <span className="text-sm">Sorry, I can't help you with that.</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <div className="bg-black/30 rounded-full px-4 py-2 text-sm font-medium inline-flex items-center">
-                <span className="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
-                Violation detected
-              </div>
-            </motion.div>
-
-            {/* Guardrails activated card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-cyan-400 to-blue-500 rounded-3xl p-8 text-white"
-            >
-              <Card className="bg-white/10 backdrop-blur border-0 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                        <span className="text-sm">👤</span>
-                      </div>
-                      <span className="text-sm">Help me plan a summer trip.</span>
-                    </div>
-                    <div className="bg-white/20 rounded-lg p-3">
-                      <div className="flex items-start space-x-2">
-                        <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center mt-1">
-                          <span className="text-white text-xs">🤖</span>
-                        </div>
-                        <div className="text-sm">
-                          <p>Sorry, I can't help with that, but I can assist you with anything related to Rhythmbox.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <div className="bg-black/30 rounded-full px-4 py-2 text-sm font-medium inline-flex items-center">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                Guardrails activated
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Security Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left content */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="space-y-8"
-            >
-              <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full px-4 py-2">
-                <span className="text-sm font-medium text-purple-600 dark:text-purple-400">Security</span>
-              </div>
-              
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-                Enterprise-grade
-                <br />
-                security & privacy
-              </h2>
-              
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                We take security and compliance seriously. MaterialScienceGPT is 
-                SOC 2 Type II and GDPR compliant, trusted by thousands of 
-                businesses to build secure and compliant AI Agents.
-              </p>
-              
-              <div className="flex items-center space-x-8">
-                <div className="flex items-center space-x-2">
-                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-xs font-bold">SOC 2</span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-xs font-bold text-blue-600">GDPR</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right content - Benefits */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="space-y-8"
-            >
-              {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 flex items-center justify-center">
-                      <benefit.icon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-foreground mb-2">{benefit.title}</h3>
-                    <p className="text-muted-foreground">{benefit.description}</p>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600"></div>
-        <div className="absolute inset-0" style={{
-          background: `radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)`
-        }}></div>
-        
-        <div className="relative max-w-4xl mx-auto text-center px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white">
-              Make customer experience
-              <br />
-              your competitive edge
-            </h2>
-            <p className="text-xl text-white/80 max-w-2xl mx-auto">
-              Use MaterialScienceGPT to deliver exceptional support experiences 
-              that set you apart from the competition.
-            </p>
-            <div className="space-y-4">
-              <SignedOut>
-                <SignUpButton mode="modal">
-                  <Button 
-                    size="lg" 
-                    className="bg-foreground text-background hover:bg-foreground/90 px-8 py-6 text-lg font-semibold rounded-xl"
-                  >
-                    Build your agent
-                  </Button>
-                </SignUpButton>
-                <div className="flex items-center justify-center text-sm text-white/70">
-                  <span>💳 No credit card required</span>
-                </div>
-              </SignedOut>
-              <SignedIn>
-                <Button 
-                  onClick={() => navigate('/chat')} 
-                  size="lg" 
-                  className="bg-white text-purple-600 hover:bg-white/90 px-8 py-6 text-lg font-semibold rounded-xl"
-                >
-                  Continue to Platform
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </SignedIn>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-background border-t border-border py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 p-2 rounded-xl">
-                  <Bot className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground">MaterialScienceGPT</h3>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">PRODUCT</h4>
-              <div className="space-y-2">
-                <div className="text-muted-foreground text-sm">Overview</div>
-                <div className="text-muted-foreground text-sm">Features</div>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">RESOURCES</h4>
-              <div className="space-y-2">
-                <div className="text-muted-foreground text-sm">Documentation</div>
-                <div className="text-muted-foreground text-sm">Support</div>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">COMPANY</h4>
-              <div className="space-y-2">
-                <div className="text-muted-foreground text-sm">About</div>
-                <div className="text-muted-foreground text-sm">Contact</div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t border-border mt-12 pt-8 text-center">
-            <p className="text-muted-foreground">© 2024 MaterialScienceGPT. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+      {/* Floating chat bubble */}
+      <SignedIn>
+        <button
+          onClick={() => navigate('/chat')}
+          className="fixed bottom-6 right-6 h-12 w-12 grid place-items-center rounded-full bg-black text-white shadow-xl hover:bg-gray-800 transition-colors"
+          aria-label="Open chat"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </button>
+      </SignedIn>
+    </main>
   );
 };
+
+/* --------------------------- Header --------------------------- */
+function Header() {
+  const navigate = useNavigate();
+  
+  return (
+    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b">
+      <div className="container mx-auto max-w-7xl px-6 md:px-8 h-16 flex items-center justify-between">
+        <button onClick={() => navigate('/')} className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-md border grid place-items-center font-bold">M</div>
+          <div className="leading-tight">
+            <span className="font-semibold">MaterialScienceGPT</span>
+            <div className="text-xs text-muted-foreground">AI Assistant for Material Science</div>
+          </div>
+        </button>
+
+        <nav className="hidden md:flex items-center gap-6 text-sm">
+          <button className="hover:text-gray-900 text-gray-700">
+            Pricing
+          </button>
+          <button className="hover:text-gray-900 text-gray-700">
+            Enterprise
+          </button>
+          <button className="hover:text-gray-900 text-gray-700">
+            Security
+          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900">
+              <span>Resources</span>
+              <ChevronDown className="h-4 w-4" aria-hidden="true" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem>Docs</DropdownMenuItem>
+              <DropdownMenuItem>Blog</DropdownMenuItem>
+              <DropdownMenuItem>Changelog</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <Button variant="ghost" className="hidden sm:inline-flex">
+                Sign In
+              </Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button className="bg-[#4476F2] text-white hover:bg-[#3d69da] rounded-full px-5">
+                Get Started
+              </Button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <Button 
+              onClick={() => navigate('/chat')} 
+              className="bg-[#4476F2] text-white hover:bg-[#3d69da] rounded-full px-5"
+            >
+              Go to Chat
+            </Button>
+            <UserButton />
+          </SignedIn>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ---------------------------- Screen 1 ---------------------------- */
+function HeroSection() {
+  const navigate = useNavigate();
+  
+  return (
+    <section className="container mx-auto max-w-7xl px-6 md:px-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center pt-6 md:pt-10">
+        <div>
+          <GeneratedHeroText />
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <SignedOut>
+              <SignUpButton mode="modal">
+                <Button className="h-12 px-6 rounded-xl bg-[#2563EB] hover:bg-[#1e54c7] text-white inline-flex items-center gap-2">
+                  Try Chat Now <ArrowRight className="h-4 w-4" />
+                </Button>
+              </SignUpButton>
+              <SignUpButton mode="modal">
+                <Button variant="outline" className="h-12 px-6 rounded-xl">
+                  Sign Up for Free
+                </Button>
+              </SignUpButton>
+              <SignInButton mode="modal">
+                <Button variant="outline" className="h-12 px-6 rounded-xl border-dashed">
+                  Sign In
+                </Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <Button 
+                onClick={() => navigate('/chat')}
+                className="h-12 px-6 rounded-xl bg-[#2563EB] hover:bg-[#1e54c7] text-white inline-flex items-center gap-2"
+              >
+                Go to Chat <ArrowRight className="h-4 w-4" />
+              </Button>
+            </SignedIn>
+          </div>
+        </div>
+
+        <div className="relative">
+          <HeroVideo />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------- Screen 2 ---------------------------- */
+function FeaturePanels() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Panel 1 — Instant Answers */}
+      <GradientPanel gradient="from-[#9B5CFF] via-[#8E5DF2] to-[#B082FF]">
+        <InnerCard>
+          <QAVideo
+            qa={[
+              {
+                q: "What is the band gap of monolayer MoS₂ and how does it compare to bulk?",
+                a: "Monolayer MoS₂ has a direct band gap around 1.8 eV, whereas bulk MoS₂ is indirect at roughly 1.2 eV.",
+              },
+              {
+                q: "What is a typical band gap for hybrid perovskites?",
+                a: "Most hybrid perovskites range from ~1.3 to 1.7 eV, which is suitable for photovoltaic applications.",
+              },
+            ]}
+          />
+        </InnerCard>
+        <StatusPill text="Instant Answers" />
+      </GradientPanel>
+
+      {/* Panel 2 — Experiment Copilot */}
+      <GradientPanel gradient="from-[#FF715C] via-[#FF6B86] to-[#FFA06B]">
+        <InnerCard>
+          <QAVideo
+            qa={[
+              {
+                q: "Design a safe annealing schedule for Al 2024.",
+                a: "Solutionize 495–505°C, quench, then age at 160–180°C. For ductility, under‑age and include a brief 300–350°C stress‑relief.",
+              },
+              {
+                q: "Recommend heat treatment to refine grains in stainless steel.",
+                a: "Use controlled recrystallization at ~1000–1100°C for a short soak followed by a rapid quench to encourage fine grains.",
+              },
+            ]}
+          />
+        </InnerCard>
+        <StatusPill text="Experiment Copilot" />
+      </GradientPanel>
+
+      {/* Panel 3 — Knowledge Memory */}
+      <GradientPanel gradient="from-[#64E9FF] via-[#7AD9FF] to-[#00C2FF]">
+        <InnerCard>
+          <QAVideo
+            qa={[
+              {
+                q: "Pick up where we left off on the perovskite study.",
+                a: "Loaded your notes and results — here's the next experiment to validate the hypothesis and improve film stability.",
+              },
+              {
+                q: "Remind me of yesterday's Ti‑6Al‑4V settings.",
+                a: "You ran 940°C solution treat for 30 min, water quench, then age at 550°C for 2 hours — we can tune this for toughness.",
+              },
+            ]}
+          />
+        </InnerCard>
+        <StatusPill text="Knowledge Memory" />
+      </GradientPanel>
+    </div>
+  );
+}
+
+function GradientPanel({ children, gradient }: { children: React.ReactNode; gradient: string }) {
+  return (
+    <div className="relative rounded-[28px] p-6 min-h-[420px] shadow-[0_10px_40px_rgba(0,0,0,0.15)] overflow-hidden">
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-90`} />
+      <div className="absolute inset-0 [background-image:radial-gradient(rgba(255,255,255,0.25)_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
+      <div className="relative z-[1] flex flex-col items-center justify-start pt-8 pb-10">{children}</div>
+    </div>
+  );
+}
+
+function InnerCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <div className={`w-[86%] mx-auto rounded-[22px] bg-white border shadow-lg ${className}`}>{children}</div>;
+}
+
+function StatusPill({ text }: { text: string }) {
+  return (
+    <div className="mt-5 pointer-events-none">
+      <div className="inline-flex items-center gap-3 bg-black text-white rounded-full px-6 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)] ring-1 ring-white/10">
+        <div className="flex -space-x-2">
+          <div className="h-6 w-6 rounded-full bg-white/10 grid place-items-center border border-white/20">
+            <Sparkles className="h-3.5 w-3.5" />
+          </div>
+          <div className="h-6 w-6 rounded-full bg-white/10 grid place-items-center border border-white/20">
+            <Brain className="h-3.5 w-3.5" />
+          </div>
+        </div>
+        <span className="text-sm font-medium">{text}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------- Screen 3 ---------------------------- */
+function SecuritySection() {
+  return (
+    <section id="security" className="container mx-auto max-w-7xl px-6 md:px-8 py-14 md:py-20">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-10 items-start">
+        {/* Left column */}
+        <div>
+          <div className="mb-4">
+            <span className="inline-flex items-center px-3 py-1 rounded-full border border-pink-200 bg-pink-50 text-pink-700 text-sm">
+              Security
+            </span>
+          </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
+            {"Enterprise‑grade"}
+            <br />
+            {"security & privacy"}
+          </h2>
+          <p className="mt-5 text-lg text-gray-600 max-w-2xl">
+            {
+              "We take security and compliance seriously. MaterialScienceGPT is designed to keep your research data private and compliant so teams can build secure AI workflows with confidence."
+            }
+          </p>
+
+          {/* Compliance badges */}
+          <div className="mt-10 flex items-center gap-6">
+            <div className="h-16 w-16 rounded-full border grid place-items-center bg-white shadow-sm text-[11px] font-medium text-gray-700">
+              <div className="text-center leading-tight">
+                <div>{"AICPA"}</div>
+                <div className="text-xs font-semibold">SOC 2</div>
+              </div>
+            </div>
+            <div className="h-16 w-16 rounded-full border grid place-items-center bg-white shadow-sm text-[11px] font-medium text-gray-700">
+              <div className="text-center leading-tight">
+                <div>{"EU"}</div>
+                <div className="text-xs font-semibold">GDPR</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right column */}
+        <div>
+          <div className="rounded-3xl border shadow-sm overflow-hidden bg-white">
+            <div className="divide-y">
+              <SecurityFeatureRow
+                title="Your data stays yours"
+                desc="Your data is only accessible to your AI agent and is never used to train models."
+                Icon={Database}
+                gradient="from-cyan-400 to-blue-500"
+              />
+              <SecurityFeatureRow
+                title="Data encryption"
+                desc="All data is encrypted at rest and in transit using industry‑standard algorithms."
+                Icon={Lock}
+                gradient="from-emerald-400 to-green-600"
+              />
+              <SecurityFeatureRow
+                title="Secure integrations"
+                desc="We use verified variables to ensure users can access only their own data in your systems."
+                Icon={Boxes}
+                gradient="from-orange-400 to-rose-500"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SecurityFeatureRow({
+  title,
+  desc,
+  Icon,
+  gradient,
+}: {
+  title: string;
+  desc: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  gradient: string;
+}) {
+  return (
+    <div className="p-6 md:p-7 lg:p-8">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-6">
+        <div>
+          <h3 className="text-xl font-semibold">{title}</h3>
+          <p className="mt-2 text-gray-600">{desc}</p>
+        </div>
+        <div className="relative">
+          <div className={`size-20 rounded-2xl bg-gradient-to-br ${gradient} opacity-20`} />
+          <Icon className="absolute inset-0 m-auto size-10 text-gray-700/70" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------- Screen 4 (new) ---------------------------- */
+function WhyPeopleChooseSection() {
+  const navigate = useNavigate();
+  
+  return (
+    <section className="relative overflow-hidden">
+      {/* Background blobs */}
+      <div className="pointer-events-none absolute -left-24 bottom-[-120px] h-[360px] w-[360px] rounded-full bg-gradient-to-tr from-fuchsia-500/40 to-pink-400/40 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 bottom-[-140px] h-[360px] w-[360px] rounded-full bg-gradient-to-tl from-orange-500/40 to-rose-500/40 blur-3xl" />
+
+      <div className="container mx-auto max-w-5xl px-6 md:px-8 py-20 md:py-24 text-center">
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
+          Make materials R&amp;D your competitive edge
+        </h2>
+        <p className="mt-5 text-lg text-gray-600 max-w-3xl mx-auto">
+          Use MaterialScienceGPT to deliver exceptional research speed, accuracy, and support for your team — stand out with faster iterations and better decisions.
+        </p>
+
+        {/* CTA with gradient underline */}
+        <div className="mt-8 inline-flex flex-col items-center">
+          <SignedOut>
+            <SignUpButton mode="modal">
+              <Button className="h-12 px-6 rounded-xl bg-black text-white hover:bg-black/90">
+                Build your materials agent
+              </Button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <Button 
+              onClick={() => navigate('/chat')}
+              className="h-12 px-6 rounded-xl bg-black text-white hover:bg-black/90"
+            >
+              Start using your agent
+            </Button>
+          </SignedIn>
+          <div className="mt-2 h-[3px] w-full rounded-full bg-gradient-to-r from-pink-500 via-orange-500 to-fuchsia-500" />
+          <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+            <CreditCard className="h-4 w-4" />
+            <span>No credit card required</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------ Footer ------------------------------ */
+function SiteFooter() {
+  const navigate = useNavigate();
+  
+  return (
+    <footer className="mt-16 bg-black text-white pt-10">
+      <div className="container mx-auto max-w-7xl px-6 md:px-8">
+        <div className="pb-10">
+          <div className="flex items-center gap-2">
+            <div className="h-7 w-7 rounded-md border border-white grid place-items-center font-bold">M</div>
+            <span className="font-semibold">MaterialScienceGPT</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-12 text-sm">
+          <div>
+            <div className="font-semibold mb-3">Product</div>
+            <ul className="space-y-2 text-white/80">
+              <li>
+                <button onClick={() => navigate('/chat')}>Chat</button>
+              </li>
+              <li>
+                <button>Features</button>
+              </li>
+              <li>
+                <button>Pricing</button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="font-semibold mb-3">Resources</div>
+            <ul className="space-y-2 text-white/80">
+              <li>
+                <button>Docs</button>
+              </li>
+              <li>
+                <button>Blog</button>
+              </li>
+              <li>
+                <button>Changelog</button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="font-semibold mb-3">Company</div>
+            <ul className="space-y-2 text-white/80">
+              <li>
+                <button>About</button>
+              </li>
+              <li>
+                <button>Careers</button>
+              </li>
+              <li>
+                <button>Contact</button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="font-semibold mb-3">Legal</div>
+            <ul className="space-y-2 text-white/80">
+              <li>
+                <button>Privacy</button>
+              </li>
+              <li>
+                <button>Terms</button>
+              </li>
+              <li>
+                <button>Security</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="border-t border-white/10">
+        <div className="container mx-auto max-w-7xl px-6 md:px-8 py-6 text-sm text-white/60">
+          © {new Date().getFullYear()} MaterialScienceGPT. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ------------------------------ Utility ------------------------------ */
+function SectionWrapper({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={`container mx-auto max-w-7xl px-6 md:px-8 py-14 md:py-20 ${className}`}>
+      {children}
+    </section>
+  );
+}
 
 export default Landing;
