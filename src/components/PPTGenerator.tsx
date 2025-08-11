@@ -90,7 +90,7 @@ export const PPTGenerator = () => {
       });
 
       // Generate the presentation
-      const pptBlob = await pptx.write({ outputType: 'blob' }) as Blob;
+      const pptBlob = await pptx.writeFile({ outputType: 'blob' });
       
       // Create download URL
       const downloadUrl = URL.createObjectURL(pptBlob);

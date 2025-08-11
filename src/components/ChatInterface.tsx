@@ -1,12 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Atom, Image as ImageIcon, FileText, X, Presentation } from 'lucide-react';
+import { Send, Atom, Image as ImageIcon, FileText, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageBubble } from '@/components/MessageBubble';
 import { WelcomeScreen } from '@/components/WelcomeScreen';
-import { PPTGenerator } from '@/components/PPTGenerator';
 import { useChat, Message, Attachment } from '@/hooks/useChat';
 import { useToast } from '@/hooks/use-toast';
 interface ChatInterfaceProps {
@@ -18,7 +17,6 @@ export const ChatInterface = ({ onChatSave, loadedMessages }: ChatInterfaceProps
   const { messages, isLoading, sendMessage, loadMessages } = useChat(onChatSave);
   const [input, setInput] = useState('');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [showPPTGenerator, setShowPPTGenerator] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -120,26 +118,6 @@ export const ChatInterface = ({ onChatSave, loadedMessages }: ChatInterfaceProps
     const files = e.target.files ? Array.from(e.target.files) : [];
     await addAttachments(files, 'pdf');
   };
-  
-  if (showPPTGenerator) {
-    return (
-      <div className="flex-1 flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-border bg-card">
-          <h2 className="text-lg font-semibold">PPT Generator</h2>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowPPTGenerator(false)}
-          >
-            Back to Chat
-          </Button>
-        </div>
-        <div className="flex-1 overflow-auto">
-          <PPTGenerator />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex-1 flex flex-col">
       {/* Messages Area */}
@@ -217,10 +195,6 @@ export const ChatInterface = ({ onChatSave, loadedMessages }: ChatInterfaceProps
                 <Button type="button" variant="outline" size="sm" onClick={() => pdfInputRef.current?.click()}>
                   <FileText className="h-4 w-4" />
                   PDF
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => setShowPPTGenerator(true)}>
-                  <Presentation className="h-4 w-4" />
-                  PPT Generator
                 </Button>
               </div>
             </div>
