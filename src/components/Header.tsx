@@ -2,7 +2,6 @@
 import React from 'react';
 import { Menu, Atom } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { UserButton, useUser } from '@clerk/clerk-react';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -10,8 +9,6 @@ interface HeaderProps {
 }
 
 export const Header = ({ onMenuClick, isMobile }: HeaderProps) => {
-  const { user } = useUser();
-
   return (
     <header className="bg-card border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
       <div className="flex items-center gap-3">
@@ -37,29 +34,9 @@ export const Header = ({ onMenuClick, isMobile }: HeaderProps) => {
       </div>
       
       <div className="flex items-center gap-3">
-        {user ? (
-          <>
-            <div className="hidden sm:flex flex-col items-end">
-              <span className="text-sm font-medium text-foreground">
-                {user.firstName} {user.lastName}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {user.primaryEmailAddress?.emailAddress}
-              </span>
-            </div>
-            <UserButton 
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8"
-                }
-              }}
-            />
-          </>
-        ) : (
-          <div className="text-sm text-muted-foreground">
-            Guest Mode
-          </div>
-        )}
+        <div className="text-sm text-muted-foreground">
+          AI Assistant Ready
+        </div>
       </div>
     </header>
   );
