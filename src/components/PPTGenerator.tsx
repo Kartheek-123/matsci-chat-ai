@@ -90,10 +90,10 @@ export const PPTGenerator = () => {
       });
 
       // Generate the presentation
-      const pptBlob = await pptx.writeFile({ outputType: 'blob' });
+      const pptBlob = await pptx.write({ outputType: 'blob' } as any);
       
       // Create download URL
-      const downloadUrl = URL.createObjectURL(pptBlob);
+      const downloadUrl = URL.createObjectURL(pptBlob as Blob);
       
       // Generate unique ID and share URL
       const pptId = crypto.randomUUID();
